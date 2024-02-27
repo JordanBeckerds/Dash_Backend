@@ -17,3 +17,10 @@ For Admin_Login:
     
 For Admin_Dashtrak:
   - Good luck, test et verifie
+
+For Request:
+  - C'est le php pour la demande de site
+  - Esseye dit moi si il y a un truc qui manque
+
+For SQL DB:
+  - C'est la representation et le code pour crée la db entière de la db
