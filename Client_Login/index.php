@@ -2,7 +2,7 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Database connection
+    // Database connection (replace with your database credentials)
     $servername = "localhost";
     $username = "username";
     $password = "password";
@@ -12,37 +12,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $client_user = $_POST['client_user'];
     $client_key = $_POST['client_key'];
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection using PDO (secure method)
+    try {
+        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        $stmt = $conn->prepare("SELECT * FROM ClientLogin WHERE ClientUser = :client_user");
+        $stmt->execute(['client_user' => $client_user]);
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        // Fetch user from database
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($client_key, $user['ClientKey'])) {
+            // Password is correct, redirect to dashboard or another page
+            $_SESSION['client_user'] = $client_user; // Store username in session
+            header("Location: dashboard.php"); // Redirect to dashboard
+            exit;
+        } else {
+            // Invalid username or password
+            $login_error = "Invalid username or password";
+        }
+    } catch(PDOException $e) {
+        // Error handling
+        die("Connection failed: " . $e->getMessage());
     }
-
-    // Prepare SQL statement
-    $sql = "SELECT * FROM ClientLogin WHERE ClientUser = ? AND ClientKey = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $client_user, $client_key);
-
-    // Execute SQL statement
-    $stmt->execute();
-
-    // Get result
-    $result = $stmt->get_result();
-
-    // Check if user exists
-    if ($result->num_rows == 1) {
-        // User exists, redirect to dashboard or another page
-        $_SESSION['client_user'] = $client_user; // Store username in session
-        header("Location: dashboard.php"); // Redirect to dashboard
-    } else {
-        // User does not exist, set error message
-        $login_error = "Invalid username or password";
-    }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>
 <!DOCTYPE html>
@@ -55,15 +48,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h2>Client Login</h2>
     <?php if(isset($login_error)): ?>
-        <p style="color: red;"><?php echo $login_error; ?></p>
+        <p style="color: red;"><?php echo htmlspecialchars($login_error); ?></p>
     <?php endif; ?>
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
         <label for="client_user">Username:</label>
         <input type="text" id="client_user" name="client_user" required><br><br>
         <label for="client_key">Password:</label>
         <input type="password" id="client_key" name="client_key" required><br><br>
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCSRFToken()); ?>">
         <button type="submit">Login</button>
     </form>
 </body>
 </html>
 
+<?php
+// Function to generate CSRF token
+function generateCSRFToken() {
+    if (function_exists('random_bytes')) {
+        return bin2hex(random_bytes(32));
+    } elseif (function_exists('openssl_random_pseudo_bytes')) {
+        return bin2hex(openssl_random_pseudo_bytes(32));
+    } else {
+        return uniqid();
+    }
+}
+?>
