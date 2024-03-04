@@ -7,52 +7,56 @@ if (!isset($_SESSION['client_user'])) {
     exit();
 }
 
-// Database connection
-$servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "database";
+// Include a separate configuration file containing sensitive information
+require_once 'config.php';
 
-// Get client username
+// Generate CSRF token
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Validate CSRF token
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("CSRF token validation failed!");
+    }
+}
+
+// Get client username securely
 $client_user = $_SESSION['client_user'];
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Create a PDO connection
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 
-// Retrieve client info
 $sqlClientInfo = "SELECT * FROM ClientInfo WHERE ClientUser = ?";
 $stmt = $conn->prepare($sqlClientInfo);
-$stmt->bind_param("s", $client_user);
-$stmt->execute();
-$resultClientInfo = $stmt->get_result();
+$stmt->execute([$client_user]);
+$clientInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
 
-if ($resultClientInfo->num_rows == 1) {
-    $clientInfo = $resultClientInfo->fetch_assoc();
+if ($clientInfo) {
     $clientId = $clientInfo['ClientId'];
+    
+    $sqlProjects = "SELECT * FROM ClientProjects WHERE ClientId = ?";
+    $stmt = $conn->prepare($sqlProjects);
+    $stmt->execute([$clientId]);
+    $resultProjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+
+    $sqlTickets = "SELECT * FROM ClientTicket WHERE ClientId = ?";
+    $stmt = $conn->prepare($sqlTickets);
+    $stmt->execute([$clientId]);
+    $resultTickets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
 }
 
-$stmt->close();
-
-// Retrieve client projects
-$sqlProjects = "SELECT * FROM ClientProjects WHERE ClientId = ?";
-$stmt = $conn->prepare($sqlProjects);
-$stmt->bind_param("i", $clientId);
-$stmt->execute();
-$resultProjects = $stmt->get_result();
-
-// Retrieve client tickets
-$sqlTickets = "SELECT * FROM ClientTicket WHERE ClientId = ?";
-$stmt = $conn->prepare($sqlTickets);
-$stmt->bind_param("i", $clientId);
-$stmt->execute();
-$resultTickets = $stmt->get_result();
-
-$conn->close();
+// Close the database connection
+$conn = null;
 ?>
 
 <!DOCTYPE html>
@@ -78,41 +82,38 @@ $conn->close();
 
     <div class="container">
         <h2>Your Projects</h2>
-        <?php
-        if ($resultProjects->num_rows > 0) {
-            while ($row = $resultProjects->fetch_assoc()) {
-                echo '<div class="project-container">';
-                echo '<strong>Project ID:</strong> ' . htmlspecialchars($row["ProjectId"]) . '<br>';
-                echo '<strong>Project Folder:</strong> ' . htmlspecialchars($row["ProjectFolder"]) . '<br>';
-                echo '<strong>Project Description:</strong> ' . htmlspecialchars($row["ProjectDesc"]) . '<br>';
-                echo '</div>';
-            }
-        } else {
-            echo "No projects found";
-        }
-        ?>
+        <?php if (!empty($resultProjects)): ?>
+            <?php foreach ($resultProjects as $project): ?>
+                <div class="project-container">
+                    <strong>Project ID:</strong> <?php echo htmlspecialchars($project['ProjectId']); ?><br>
+                    <strong>Project Folder:</strong> <?php echo htmlspecialchars($project['ProjectFolder']); ?><br>
+                    <strong>Project Description:</strong> <?php echo htmlspecialchars($project['ProjectDesc']); ?><br>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            No projects found
+        <?php endif; ?>
     </div>
 
     <div class="container">
         <h2>Your Tickets</h2>
-        <?php
-        if ($resultTickets->num_rows > 0) {
-            while ($row = $resultTickets->fetch_assoc()) {
-                echo '<div class="ticket-container">';
-                echo '<strong>Ticket ID:</strong> ' . htmlspecialchars($row["TicketId"]) . '<br>';
-                echo '<strong>Ticket:</strong> ' . htmlspecialchars($row["Ticket"]) . '<br>';
-                echo '</div>';
-            }
-        } else {
-            echo "No tickets found";
-        }
-        ?>
+        <?php if (!empty($resultTickets)): ?>
+            <?php foreach ($resultTickets as $ticket): ?>
+                <div class="ticket-container">
+                    <strong>Ticket ID:</strong> <?php echo htmlspecialchars($ticket['TicketId']); ?><br>
+                    <strong>Ticket:</strong> <?php echo htmlspecialchars($ticket['Ticket']); ?><br>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            No tickets found
+        <?php endif; ?>
     </div>
 
     <div class="container">
         <h2>Create New Project</h2>
         <!-- Form to create a new project -->
         <form action="create_project.php" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <label for="project_folder">Project Folder:</label>
             <input type="text" id="project_folder" name="project_folder" required><br><br>
             <label for="project_desc">Project Description:</label>
@@ -125,6 +126,7 @@ $conn->close();
         <h2>Create New Ticket</h2>
         <!-- Form to create a new ticket -->
         <form action="create_ticket.php" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <label for="ticket">Ticket:</label>
             <input type="text" id="ticket" name="ticket" required><br><br>
             <button type="submit">Create Ticket</button>
