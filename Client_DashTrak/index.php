@@ -96,6 +96,19 @@ $conn = null;
     </div>
 
     <div class="container">
+        <h2>Create New Project</h2>
+        <!-- Form to create a new project -->
+        <form action="create_project.php" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <label for="project_folder">Project Folder:</label>
+            <input type="text" id="project_folder" name="project_folder" required><br><br>
+            <label for="project_desc">Project Description:</label>
+            <textarea id="project_desc" name="project_desc" required></textarea><br><br>
+            <button type="submit">Create Project</button>
+        </form>
+    </div>
+    
+    <div class="container">
         <h2>Your Tickets</h2>
         <?php if (!empty($resultTickets)): ?>
             <?php foreach ($resultTickets as $ticket): ?>
@@ -107,19 +120,6 @@ $conn = null;
         <?php else: ?>
             No tickets found
         <?php endif; ?>
-    </div>
-
-    <div class="container">
-        <h2>Create New Project</h2>
-        <!-- Form to create a new project -->
-        <form action="create_project.php" method="post">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-            <label for="project_folder">Project Folder:</label>
-            <input type="text" id="project_folder" name="project_folder" required><br><br>
-            <label for="project_desc">Project Description:</label>
-            <textarea id="project_desc" name="project_desc" required></textarea><br><br>
-            <button type="submit">Create Project</button>
-        </form>
     </div>
 
     <div class="container">
