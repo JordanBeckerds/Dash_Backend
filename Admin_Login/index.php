@@ -1,31 +1,43 @@
 <?php
 session_start();
 
-// Database connection
+// Generate CSRF token
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Database connection (replace with your actual credentials)
 $servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "database";
+$username = "your_username";
+$password = "your_password";
+$dbname = "your_database";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Create a secure connection using PDO
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Verify CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF token validation failed.");
+    }
+    
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Prepare and bind parameters
-    $stmt = $conn->prepare("SELECT * FROM AdminLogin WHERE AdminUser = ?");
-    $stmt->bind_param("s", $username);
+    // Prepare and execute the SQL statement with bound parameters to prevent SQL injection
+    $stmt = $conn->prepare("SELECT * FROM AdminLogin WHERE AdminUser = :username");
+    $stmt->bindParam(':username', $username);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
+    if ($row) {
+        // Verify password using password_hash
         if (password_verify($password, $row['AdminKey'])) {
             // Admin login successful, set session variables
             $_SESSION['admin_id'] = $row['AdminId'];
@@ -41,10 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Admin user not found
         echo "Admin user not found";
     }
-    $stmt->close();
 }
 
-$conn->close();
+// Close the database connection
+$conn = null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,6 +68,7 @@ $conn->close();
 <body>
     <h2>Admin Login</h2>
     <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username" required><br>
         <label for="password">Password:</label><br>
@@ -64,4 +77,5 @@ $conn->close();
     </form>
 </body>
 </html>
+
 
