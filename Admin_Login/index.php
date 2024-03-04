@@ -4,9 +4,7 @@ session_start();
 // Generate CSRF token
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 
-// Database connection (replace with your actual credentials)
 $servername = "localhost";
 $username = "your_username";
 $password = "your_password";
