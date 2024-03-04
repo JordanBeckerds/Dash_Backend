@@ -24,28 +24,39 @@
         <input type="text" id="company" name="company"><br>
 
         <label for="request">Request:</label><br>
-        <input type="text" id="request" name="request" required><br>
+        <textarea id="request" name="request" required></textarea><br>
 
         <input type="submit" value="Submit">
     </form>
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Get form data
-        $email = $_POST['email'];
-        $country = $_POST['country'];
-        $firstname = $_POST['firstname'];
-        $lastname = $_POST['lastname'];
-        $company = isset($_POST['company']) ? $_POST['company'] : '';
-        $request = $_POST['request'];
+        // Sanitize form data
+        $email = htmlspecialchars($_POST['email']);
+        $country = htmlspecialchars($_POST['country']);
+        $firstname = htmlspecialchars($_POST['firstname']);
+        $lastname = htmlspecialchars($_POST['lastname']);
+        $company = isset($_POST['company']) ? htmlspecialchars($_POST['company']) : '';
+        $request = htmlspecialchars($_POST['request']);
+
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "Invalid email format. Please provide a valid email address.";
+            exit;
+        }
 
         // Email information
-        $to = "mateo@gmail.com"; // ton email
-        $subject = "Requête de site";
+        $to = "mateo@gmail.com"; // Your email address
+        $subject = "Site Request";
         $body = "Email: $email\nCountry: $country\nFirst Name: $firstname\nLast Name: $lastname\nCompany: $company\nRequest: $request";
 
+        // Additional email headers
+        $headers = "From: " . $email . "\r\n" .
+                   "Reply-To: " . $email . "\r\n" .
+                   "X-Mailer: PHP/" . phpversion();
+
         // Send email
-        if (mail($to, $subject, $body)) {
+        if (mail($to, $subject, $body, $headers)) {
             echo "Request sent successfully!";
         } else {
             echo "Failed to make request. Please try again later.";
@@ -54,3 +65,4 @@
     ?>
 </body>
 </html>
+
