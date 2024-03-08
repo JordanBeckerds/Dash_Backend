@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard</title>
+    <style>
+        .container {
+            margin-bottom: 20px;
+        }
+        .project-container, .ticket-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 300px;
+        }
+        .details {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, <?php echo htmlspecialchars($client_user); ?>!</h1>
+
+    <div class="container">
+        <h2>Your Projects</h2>
+        <?php if (!empty($resultProjects)): ?>
+            <?php foreach ($resultProjects as $project): ?>
+                <div class="project-container">
+                    <strong>Project ID:</strong> <?php echo htmlspecialchars($project['ProjectId']); ?><br>
+                    <strong>Project Name:</strong> <?php echo htmlspecialchars($project['ProjectName']); ?><br>
+                    <button onclick="toggleDetails('project_<?php echo $project['ProjectId']; ?>')">Show Details</button>
+                    <div class="details" id="project_<?php echo $project['ProjectId']; ?>">
+                        <strong>Project Folder:</strong> <?php echo htmlspecialchars($project['ProjectFolder']); ?><br>
+                        <strong>Project Description:</strong> <?php echo htmlspecialchars($project['ProjectDesc']); ?><br>
+                        <!-- Add more details here as needed -->
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            No projects found
+        <?php endif; ?>
+    </div>
+
+    <div class="container">
+        <h2>Create New Project</h2>
+        <!-- Form to create a new project -->
+        <form action="create_project.php" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <label for="project_folder">Project Folder:</label>
+            <input type="text" id="project_folder" name="project_folder" required><br><br>
+            <label for="project_name">Project Name:</label>
+            <input type="text" id="project_name" name="project_name" required><br><br>
+            <label for="project_desc">Project Description:</label>
+            <textarea id="project_desc" name="project_desc" required></textarea><br><br>
+            <button type="submit">Create Project</button>
+        </form>
+    </div>
+    
+    <div class="container">
+        <h2>Your Tickets</h2>
+        <?php if (!empty($resultTickets)): ?>
+            <?php foreach ($resultTickets as $ticket): ?>
+                <div class="ticket-container">
+                    <strong>Ticket ID:</strong> <?php echo htmlspecialchars($ticket['TicketId']); ?><br>
+                    <strong>Ticket Name:</strong> <?php echo htmlspecialchars($ticket['TicketName']); ?><br>
+                    <button onclick="toggleDetails('ticket_<?php echo $ticket['TicketId']; ?>')">Show Details</button>
+                    <div class="details" id="ticket_<?php echo $ticket['TicketId']; ?>">
+                        <strong>Ticket Details:</strong> <?php echo htmlspecialchars($ticket['TicketDetails']); ?><br>
+                        <!-- Add more details here as needed -->
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            No tickets found
+        <?php endif; ?>
+    </div>
+
+    <div class="container">
+        <h2>Create New Ticket</h2>
+        <!-- Form to create a new ticket -->
+        <form action="create_ticket.php" method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <label for="ticket_name">Ticket Name:</label>
+            <input type="text" id="ticket_name" name="ticket_name" required><br><br>
+            <label for="ticket">Ticket:</label>
+            <input type="text" id="ticket" name="ticket" required><br><br>
+            <button type="submit">Create Ticket</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleDetails(elementId) {
+            var details = document.getElementById(elementId);
+            if (details.style.display === "none") {
+                details.style.display = "block";
+            } else {
+                details.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
