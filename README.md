@@ -18,6 +18,9 @@ For Admin_Login:
 For Admin_Dashtrak:
   - Good luck, test et verifie
 
+For ProjectDesc:
+  - C'est la webpage qui montre les details du project sur lequelle tas cliquer dans Client_Dashtrack
+
 For Request:
   - C'est le php pour la demande de site
   - Esseye dit moi si il y a un truc qui manque
