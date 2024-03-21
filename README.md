@@ -27,3 +27,4 @@ For Request:
 
 For SQL DB:
   - C'est la representation et le code pour crée la db entière de la db
+  - Nouveau alters
