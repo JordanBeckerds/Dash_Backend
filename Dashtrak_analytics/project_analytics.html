@@ -13,6 +13,12 @@
     </div>
 
     <div>
+        <h2>All Visits and Actions</h2>
+        <?php include 'controller.php'; ?>
+        <?php $controller->showAllResultsPage(); ?>
+    </div>
+
+    <div>
         <h2>Count of Unique Visitors</h2>
         <?php echo $controller->getCountUniqueVisitors(); ?>
     </div>
