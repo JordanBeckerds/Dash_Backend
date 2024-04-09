@@ -3,14 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Analytics Dashboard</title>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Visits: <?php echo $visits; ?></p>
-    <p>Unique Visitors: <?php echo $uniqueVisitors; ?></p>
-    <p>Unique Pageviews: <?php echo $uniquePageviews; ?></p>
-    <a href="index.php?url=dashboard/siteDetails">View Site Details</a>
+    <div>
+        <h2>Top 10 Visits and Actions</h2>
+        <?php include 'controller.php'; ?>
+        <?php $controller->showTopResultsPage(); ?>
+    </div>
+
+    <div>
+        <h2>Count of Unique Visitors</h2>
+        <?php echo $controller->getCountUniqueVisitors(); ?>
+    </div>
+
+    <div>
+        <h2>Count of Unique Pageviews</h2>
+        <?php echo $controller->getCountUniquePageviews(); ?>
+    </div>
+
+    <div>
+        <h2>All Page URL Pageviews</h2>
+        <?php $pageviews = $controller->getAllPageURLPageviews(); ?>
+        <ul>
+            <?php foreach ($pageviews as $pageview): ?>
+                <li><?php echo $pageview['page_url']; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <div>
+        <h2>Total Pageviews per Page URL</h2>
+        <?php $totalPageviews = $controller->getTotalPageviewsPerPage(); ?>
+        <ul>
+            <?php foreach ($totalPageviews as $page): ?>
+                <li><?php echo $page['page_url'] . ': ' . $page['hits']; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <div>
+        <h2>Count and Select Outlinks</h2>
+        <?php $outlinks = $controller->getCountAndSelectOutlinks(); ?>
+        <ul>
+            <?php foreach ($outlinks as $outlink): ?>
+                <li><?php echo $outlink['name'] . ': ' . $outlink['COUNT(*)']; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 </body>
 </html>
+
 
