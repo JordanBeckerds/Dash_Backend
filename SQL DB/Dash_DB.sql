@@ -35,7 +35,7 @@ CREATE TABLE ClientInfo (
     Name VARCHAR(40) NOT NULL,
     Company VARCHAR(40),
     Email VARCHAR(60) NOT NULL,
-    Phone VARCHAR(15),
+    Phone VARCHAR(15) NOT NULL PRIMARY KEY,
     ClientDesc TEXT,
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE
 );
@@ -46,6 +46,7 @@ CREATE TABLE ClientProject (
     ProjectId INT AUTO_INCREMENT PRIMARY KEY,
     ProjectFolder VARCHAR(255) NOT NULL,
     ProjectDesc TEXT,
+    AnalyticsId INT,
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE
 );
 
