@@ -44,9 +44,10 @@ CREATE TABLE ClientInfo (
 CREATE TABLE ClientProject (
     ClientId SMALLINT,
     ProjectId INT AUTO_INCREMENT PRIMARY KEY,
-    ProjectFolder VARCHAR(255) NOT NULL,
+    ProjectFiles BLOB,
     ProjectDesc TEXT,
     AnalyticsId INT,
+    ProjectCompletion TINYINT UNSIGNED DEFAULT 0 CHECK (ProjectCompletion >= 0 AND ProjectCompletion <= 100);
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE
 );
 
@@ -56,6 +57,15 @@ CREATE TABLE ClientTicket (
     ProjectId INT,
     TicketId INT AUTO_INCREMENT PRIMARY KEY,
     Ticket TEXT,
+    FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE,
+    FOREIGN KEY (ProjectId) REFERENCES ClientProject(ProjectId) ON UPDATE CASCADE
+);
+
+CREATE TABLE ClientWebTest (
+    WebTestId INT AUTO_INCREMENT PRIMARY KEY,
+    ClientId SMALLINT,
+    ProjectId INT,
+    TestResults VARCHAR(1000),
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE,
     FOREIGN KEY (ProjectId) REFERENCES ClientProject(ProjectId) ON UPDATE CASCADE
 );
