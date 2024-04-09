@@ -47,6 +47,7 @@ CREATE TABLE ClientProject (
     ProjectFiles BLOB,
     ProjectDesc TEXT,
     AnalyticsId INT,
+    ProjectName VARCHAR(30),
     ProjectCompletion TINYINT UNSIGNED DEFAULT 0 CHECK (ProjectCompletion >= 0 AND ProjectCompletion <= 100);
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE
 );
