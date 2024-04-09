@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Registration</title>
+</head>
+<body>
+    <h2>Client Registration Form</h2>
+    <form method="post" action="register.php">
+        <label for="client">Client Name:</label><br>
+        <input type="text" id="client" name="client" required><br>
+        <label for="clientKey">Client Password:</label><br>
+        <input type="password" id="clientKey" name="clientKey" required><br>
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        <label for="company">Company:</label><br>
+        <input type="text" id="company" name="company"><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        <label for="phone">Phone:</label><br>
+        <input type="tel" id="phone" name="phone" required><br>
+        <label for="clientDesc">Client Description:</label><br>
+        <textarea id="clientDesc" name="clientDesc"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
