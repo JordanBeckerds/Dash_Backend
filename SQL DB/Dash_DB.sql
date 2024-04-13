@@ -41,7 +41,7 @@ CREATE TABLE ClientInfo (
 );
 
 -- Table: ClientProject
-CREATE TABLE ClientProject (
+CREATE TABLE ClientProjects (
     ClientId SMALLINT,
     ProjectId INT AUTO_INCREMENT PRIMARY KEY,
     ProjectName VARCHAR(30),
@@ -59,7 +59,19 @@ CREATE TABLE ClientTicket (
     TicketId INT AUTO_INCREMENT PRIMARY KEY,
     Ticket TEXT,
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE,
-    FOREIGN KEY (ProjectId) REFERENCES ClientProject(ProjectId) ON UPDATE CASCADE
+    FOREIGN KEY (ProjectId) REFERENCES ClientProjects(ProjectId) ON UPDATE CASCADE
+);
+
+CREATE TABLE ClientProducts (
+    ClientId SMALLINT,
+    ProjectId INT,
+    ProductId INT AUTO_INCREMENT PRIMARY KEY,
+    ProductName VARCHAR(60) NOT NULL,
+    ProductPrice VARCHAR(20) NOT NULL,
+    ProductImg BLOB,
+    ProductDesc TEXT,
+    FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE,
+    FOREIGN KEY (ProjectId) REFERENCES ClientProjects(ProjectId) ON UPDATE CASCADE
 );
 
 CREATE TABLE ClientWebTest (
@@ -68,7 +80,7 @@ CREATE TABLE ClientWebTest (
     ProjectId INT,
     TestResults VARCHAR(1000),
     FOREIGN KEY (ClientId) REFERENCES ClientLogin(ClientId) ON UPDATE CASCADE,
-    FOREIGN KEY (ProjectId) REFERENCES ClientProject(ProjectId) ON UPDATE CASCADE
+    FOREIGN KEY (ProjectId) REFERENCES ClientProjects(ProjectId) ON UPDATE CASCADE
 );
 
 -- Inserting values into AdminLogin
