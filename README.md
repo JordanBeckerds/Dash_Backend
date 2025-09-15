@@ -88,15 +88,6 @@ It features a modular admin dashboard, customizable sections, and a user-friendl
 
 ---
 
-## 🐶 Roadmap
-
-* [ ] User-friendly adoption request form
-* [ ] Newsletter subscription system
-* [ ] Full calendar/schedule integration
-* [ ] Multi-language support (FR/EN)
-
----
-
 ## 📜 License
 
 This project is under the **MIT License**.
