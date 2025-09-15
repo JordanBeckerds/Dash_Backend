@@ -1,44 +1,65 @@
-
-
 ```markdown
-# 🐾 Patteform
+# ⚡ Dash Backend
 
-**Patteform** is a web project inspired by [la-spa.fr](https://www.la-spa.fr/), built to help manage an animal adoption platform.  
-It features a modular admin dashboard, customizable sections, and a user-friendly frontend for browsing adoption listings, news, and more.  
+**Dash Backend** is the backend powering the **DashTrak** project, a Shopify-like platform inspired by DashOverflow.  
+It provides authentication, admin and client dashboards, request handling, and integrates with a MySQL database for full store management.  
+
+---
+
+## 📂 Project Structure
+
+```
+
+Dash\_Backend/
+├── Admin\_Dashtrak/        # Admin dashboard (site sections, users, store settings)
+├── Admin\_Login/           # Admin authentication
+├── Client\_DashTrak/       # Client dashboard for vendors/customers
+├── Client\_Login/          # Client authentication
+├── Client\_Register/       # Client registration
+├── Dashtrak\_analytics/    # Analytics module (traffic, sales, performance)
+├── ProjectDesc/           # Project description & static resources
+├── Request/               # Handles client/admin requests
+├── SQL DB/                # Database schema (Dash\_DB.sql)
+├── LICENSE                # License file
+└── README.md              # Project documentation
+
+````
 
 ---
 
 ## 🚀 Features
 
-- **Frontend**
-  - Home page with customizable sections
-  - Adoption listings with "favorite" heart feature (session-based)
-  - News/actualités with share button animations (Instagram, Twitter, Email)
-  - Responsive design with **Tailwind CSS**
+- **Authentication**
+  - Separate login systems for Admin and Clients
+  - Registration system for new clients
+  - Login attempt protection
 
-- **Backend**
-  - Modular admin dashboard
-  - Manage site sections (add/remove, reorder)
-  - Change site colors and logo
-  - Full CRUD for animals, news, and team members
-  - User login system with security (5 failed attempts = blocked)
+- **Admin Dashboard**
+  - Manage products, orders, and site content
+  - Update branding (logo, colors, sections)
+  - Access analytics & request handling
+
+- **Client Dashboard**
+  - View/manage personal store data
+  - Track orders and products
+  - Request support or modifications
+
+- **Analytics**
+  - Track user activity and sales
+  - Admin-level insights into platform performance
 
 - **Database**
-  - MySQL with tables:
-    - `animaux_a_adopter`, `animaux_adopter`
-    - `actualite`, `actualite_secs`
-    - `homepage_sections`, `group_elems`
-    - `users` (with login attempt tracking)
-    - `contact`, `equipe`, `photo_chiens`
+  - MySQL schema (`SQL DB/Dash_DB.sql`)
+  - Centralized data for users, stores, orders, products, and analytics
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML, PHP, Tailwind CSS (via CDN)
 - **Backend**: PHP 8+
 - **Database**: MySQL
-- **Hosting**: [InfinityFree](https://www.infinityfree.net/)
+- **Hosting**: Works with Apache / InfinityFree / Local PHP server
+- **Frontend**: HTML + Tailwind CSS (when paired with UI)
 
 ---
 
@@ -46,51 +67,64 @@ It features a modular admin dashboard, customizable sections, and a user-friendl
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Jdsbecker/patteform.git
-   cd patteform
+   git clone https://github.com/JordanBeckerds/Dash_Backend.git
+   cd Dash_Backend
 ````
 
 2. Import the SQL schema into MySQL:
 
    ```sql
-   source database/schema.sql;
+   source "SQL DB/Dash_DB.sql";
    ```
 
-3. Configure your database connection in:
+3. Configure database connection inside each module’s `index.php` or `db_connect.php` file.
 
-   ```
-   includes/db_connect.php
-   ```
-
-4. Deploy to your InfinityFree hosting or local PHP server:
+4. Run a local PHP server:
 
    ```bash
-   php -S localhost:8000
+   php -S localhost:8080
    ```
 
-5. Access the site at:
+5. Access the modules in the browser:
 
-   ```
-   http://localhost:8000
-   ```
+   * Admin Login → `http://localhost:8080/Admin_Login/`
+   * Client Login → `http://localhost:8080/Client_Login/`
+   * Client Register → `http://localhost:8080/Client_Register/`
+   * DashTrak Analytics → `http://localhost:8080/Dashtrak_analytics/`
 
 ---
 
-## 🔑 Admin Dashboard
+## 🔑 Default Accounts
 
-* Default login:
+* **Admin**
 
   ```
   username: admin
   password: admin
   ```
-* After 5 failed attempts, login is blocked until reset in DB.
+* **Client**
+
+  ```
+  username: client
+  password: client
+  ```
+
+*(Change these after installation for security)*
+
+---
+
+## 🗺️ Roadmap
+
+* [ ] Merge Admin & Client dashboards into unified modular system
+* [ ] Add API endpoints for frontend React integration
+* [ ] Expand analytics (charts, trends, real-time data)
+* [ ] Implement JWT authentication
 
 ---
 
 ## 📜 License
 
-This project is under the **GNU GENERAL PUBLIC LICENSE**.
+This project is licensed under the **MIT License**.
 You are free to use, modify, and distribute with attribution.
 
 ---
@@ -98,4 +132,9 @@ You are free to use, modify, and distribute with attribution.
 ## 🤝 Contributing
 
 Pull requests are welcome!
-For major changes, please open an issue first to discuss what you’d like to change.
+For major changes, open an issue first to discuss what you’d like to improve.
+
+```
+
+Would you like me to make this `README.md` **developer-facing only** (installation + DB setup), or also **product-facing** (marketing style, showing what DashTrak *is* for potential users)?
+```
