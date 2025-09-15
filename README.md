@@ -90,7 +90,7 @@ It features a modular admin dashboard, customizable sections, and a user-friendl
 
 ## 📜 License
 
-This project is under the **MIT License**.
+This project is under the **GNU GENERAL PUBLIC LICENSE**.
 You are free to use, modify, and distribute with attribution.
 
 ---
